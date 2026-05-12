@@ -1,0 +1,176 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-[rgba(28,28,33,0.7)] backdrop-blur-xl border border-[rgba(255,255,255,0.08)];
+  }
+}
+
+/* ============================================
+   Mobile-First Foundation
+   ============================================ */
+
+html, body, #root {
+  height: 100%;
+  overscroll-behavior: none; /* kill pull-to-refresh */
+}
+
+body {
+  margin: 0;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  background: #0F0F13;
+  min-height: 100dvh; /* dynamic viewport height for mobile */
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================
+   Presence Breathing Animations
+   ============================================ */
+
+@keyframes breathe-online {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+@keyframes breathe-away {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.05); }
+}
+
+.presence-online {
+  animation: breathe-online 3s ease-in-out infinite;
+}
+
+.presence-away {
+  animation: breathe-away 4s ease-in-out infinite;
+}
+
+.presence-offline {
+  opacity: 0.2;
+}
+
+/* ============================================
+   Pulse Ripple Animations (Organic, Emotional)
+   ============================================ */
+
+@keyframes ripple-expand-1 {
+  0% { transform: scale(1); opacity: 0.5; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+@keyframes ripple-expand-2 {
+  0% { transform: scale(1); opacity: 0.35; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+
+@keyframes ripple-expand-3 {
+  0% { transform: scale(1); opacity: 0.2; }
+  100% { transform: scale(3); opacity: 0; }
+}
+
+/* Receiver: rings converge inward */
+@keyframes ripple-contract {
+  0% { transform: scale(2); opacity: 0; }
+  40% { opacity: 0.5; }
+  100% { transform: scale(0.8); opacity: 0; }
+}
+
+.ripple-ring-1 {
+  animation: ripple-expand-1 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.ripple-ring-2 {
+  animation: ripple-expand-2 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.15s forwards;
+  opacity: 0;
+}
+
+.ripple-ring-3 {
+  animation: ripple-expand-3 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s forwards;
+  opacity: 0;
+}
+
+.ripple-receive-1 {
+  animation: ripple-contract 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.ripple-receive-2 {
+  animation: ripple-contract 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
+  opacity: 0;
+}
+
+.ripple-receive-3 {
+  animation: ripple-contract 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
+  opacity: 0;
+}
+
+/* ============================================
+   Heartbeat Animation
+   ============================================ */
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.12); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.08); }
+  60% { transform: scale(1); }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.2s ease-in-out infinite;
+}
+
+/* ============================================
+   Cooldown Recharge Ring
+   ============================================ */
+
+@keyframes recharge {
+  from { stroke-dashoffset: 804; } /* 2 * PI * 128 ≈ 804 */
+  to { stroke-dashoffset: 0; }
+}
+
+.cooldown-ring {
+  stroke-dasharray: 804;
+  stroke-dashoffset: 804;
+  animation: recharge var(--cooldown-duration, 3s) linear forwards;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
+/* ============================================
+   Background Pulse Flash (on receive)
+   ============================================ */
+
+@keyframes bg-pulse {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.bg-pulse-flash {
+  animation: bg-pulse 2s ease-out forwards;
+}
+
+/* ============================================
+   Invite Link Copy Animation
+   ============================================ */
+
+@keyframes copy-flash {
+  0% { background-color: rgba(255, 59, 48, 0.3); }
+  100% { background-color: transparent; }
+}
+
+.copy-flash {
+  animation: copy-flash 0.6s ease-out forwards;
+}
