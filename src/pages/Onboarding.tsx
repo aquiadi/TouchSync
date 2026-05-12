@@ -98,14 +98,12 @@ export default function Onboarding() {
     setIsWaiting(true);
 
     try {
-      // Look for active pair with this code that hasn't been fully joined
-      const { data: existingPair, error: selectError } = await supabase
+      // Look for any active pairs with this code
+      const { data: activePairs, error: selectError } = await supabase
         .from('pairs')
         .select('*')
         .eq('code', code)
-        .eq('status', 'active')
-        .is('user_b_id', null)
-        .maybeSingle();
+        .eq('status', 'active');
 
       if (selectError) {
         console.error("Select error:", selectError);
@@ -114,7 +112,17 @@ export default function Onboarding() {
         return;
       }
 
-      if (existingPair) {
+      // Find if there's an active pair waiting for a partner
+      const waitingPair = activePairs?.find(p => !p.user_b_id);
+      
+      // If there are active pairs but NONE are waiting, the code is currently in use
+      if (activePairs && activePairs.length > 0 && !waitingPair) {
+        alert("This code is currently in use by another active connection. Please try a different code.");
+        setIsWaiting(false);
+        return;
+      }
+
+      if (waitingPair) {
         // ── Join existing pair ──
         const userId = 'user_b_' + Math.random().toString(36).substring(7);
 
@@ -125,7 +133,7 @@ export default function Onboarding() {
             user_b_last_active: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           })
-          .eq('id', existingPair.id);
+          .eq('id', waitingPair.id);
 
         if (updateError) {
           console.error("Update error:", updateError);
@@ -134,7 +142,7 @@ export default function Onboarding() {
           return;
         }
 
-        localStorage.setItem('touchsync_pair_id', existingPair.id);
+        localStorage.setItem('touchsync_pair_id', waitingPair.id);
         localStorage.setItem('touchsync_user_id', userId);
         navigate('/dashboard');
       } else {
@@ -154,12 +162,9 @@ export default function Onboarding() {
 
         if (insertError) {
           console.error("Insert error:", insertError);
-          // Duplicate code — someone already has this code active
-          if (insertError.code === '23505') {
-            alert("This code is already in use. Your partner may have already joined — try refreshing.");
-          } else {
-            alert("Error creating pair: " + insertError.message);
-          }
+          // With our new migration, this should only happen if another client 
+          // created a waiting pair with the exact same code at the exact same millisecond
+          alert("This code is already in use. Your partner may have already joined — try refreshing.");
           setIsWaiting(false);
           return;
         }
